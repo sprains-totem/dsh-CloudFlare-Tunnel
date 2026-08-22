@@ -83,3 +83,17 @@ Agent 可以直接调用内置工具查询或重启隧道：
   "startedAt": "2026-08-20T07:25:30.000Z"
 }
 ```
+
+---
+
+## 🌐 Cloudflare Worker 动态路由与固定域名入口
+
+仓库内置了两套 Cloudflare Worker 脚本（位于根目录），支持在 GitHub Actions 或本地启动隧道后**自动上报并同步最新公网地址**，实现使用固定域名访问：
+
+1. **`cloudflare-worker.js` (动态跳转网关)**：
+   - 带有网页登录密码鉴权（可配置 7 天记住登录状态）；
+   - 接收 Action 的 `POST /update` 上报最新隧道地址并写入 Cloudflare KV；
+   - 用户访问 Worker 固定域名时自动重定向到最新临时实例。
+2. **`cloudflare-worker-proxy.js` (全透明反向代理)**：
+   - 全透明反向代理，完全隐藏后端真实 `trycloudflare.com` 地址；
+   - 完整支持 WebSocket（流式传输）与 Edge 边缘静态资源加速。
